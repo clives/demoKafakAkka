@@ -13,11 +13,19 @@ producer: simple producer -
 
 integration-test: wip -test of the consumer + producer
 
+### Scala version
+
+Scala 2.12.x as we have a short timeline, 3.00 if we had more flexilibity on the delivery
+
 ### Akka
 
 - typed: no, as the typed actor are still marked as "may change".
 - producer: one main actor as kafka consumer, receiving events from the "devices"
 - consumer: one main actor receiving events from the kafka consumer, updating the devices(one actor per device)
+
+### Kafka
+
+we use alpakka from lightbend. The other alternative from cakesolutions is not maintenad anymore.
 
 ###  DB
 
