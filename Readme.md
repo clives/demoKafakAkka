@@ -1,5 +1,26 @@
 # Demo project - Actor/Kafka 
 
+## Current state
+
+### done 
+producer
+
+consumer-slick(streams/slick)
+ 
+consumer-actors 
+
+### missing 
+
+spec for the actors without kafka 
+
+spec for the db - and a better dao model
+
+integration test (consumer + producer )
+
+using sbt, the test never stop (works fine in intelliJ), to confirm
+
+.....
+
 ##  Design  choice
 
 ### sbt project
@@ -44,10 +65,3 @@ We keep the data in  String instead of json to simplify the application (time li
 ### Testing
 
 use TestContainers for kafka and in memory db.
-
-
-## Todo
-
-- unit test for the actor (without kafka/..)
-- integration test ,  consumer + producer + postgress
-..........
