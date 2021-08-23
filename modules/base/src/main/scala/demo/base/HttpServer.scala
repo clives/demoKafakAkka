@@ -1,12 +1,8 @@
 package demo.base
 
-import java.io.StringWriter
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.server.Directives._
-import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 
 trait HttpServer {

@@ -1,21 +1,11 @@
 package demo.actor
 
-import java.util.{Calendar, UUID}
-
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.kafka.ProducerMessage
-import akka.kafka.scaladsl.SendProducer
-import demo.actor.Protocol.{DeviceActor, GetAllStates, GetState, MeasureState, NewMeasure, UpdateDeviceState}
-import demo.base.StreamsSettings
-import demo.models.DeviceModel
-import demo.models.Protocol.{DeviceReading, DeviceReadingFrmt, EventsToSend}
+import demo.actor.Protocol._
 import demo.models.customTypes.Guid
-import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.{Logger, LoggerFactory}
 
-import scala.collection.immutable.Seq
 import scala.language.postfixOps
-import scala.util.{Failure, Success}
 
 object DevicesStateManager {
   def props(): Props =
@@ -26,16 +16,16 @@ class DevicesStateManager() extends Actor {
 
   private val log: Logger = LoggerFactory.getLogger(getClass)
   implicit val system = ActorSystem("DevicesStateManagerActor")
-  import system.dispatcher
 
   private def createDeviceState(device: Guid, state: MeasureState): ActorRef ={
     implicit val system = ActorSystem("DevicesStateActor")
     system.actorOf(DeviceState.props(device, state ))
   }
 
-  def state(devices :List[DeviceActor], currentState: Map[Guid ,MeasureState]=Map.empty, expectedDeviceResponses :Option[Int]=None, requester:Option[ActorRef]=None  ): Actor.Receive={
-    case UpdateDeviceState(deviceId,deviceState)=>
-      val newCurrentState=currentState ++ Map(deviceId->deviceState)
+  def state(devices :List[DeviceActor], currentState: Map[Guid ,List[MeasureState]]=Map.empty, expectedDeviceResponses :Option[Int]=None, requester:Option[ActorRef]=None  ): Actor.Receive={
+    case StateResponse(deviceId,deviceStates)=>
+      log.debug(s"update from device:$deviceId states size:${currentState.size}")
+      val newCurrentState=currentState ++ Map(deviceId->deviceStates)
       if( newCurrentState.size >=  expectedDeviceResponses.getOrElse(0)){
         requester.foreach( _ ! newCurrentState)
         context.become(state(devices, Map.empty))
@@ -43,6 +33,7 @@ class DevicesStateManager() extends Actor {
         context.become(state(devices, newCurrentState,expectedDeviceResponses,requester))
       }
     case GetAllStates =>
+      log.debug(s"GetAllStates - nbr of devices:${devices.size}")
       context.become(state(devices, Map.empty, expectedDeviceResponses=Some(devices.size), Some(sender())))
       devices.foreach( _.actorRef ! GetState)
     case NewMeasure(deviceReading) =>

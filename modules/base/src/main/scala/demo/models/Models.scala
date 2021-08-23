@@ -1,12 +1,11 @@
 package demo.models
 import java.sql.Timestamp
-
-import play.api.libs.json.{Format, Json, Reads, Writes}
+import java.util
 import java.util.UUID
 
 import demo.models.customTypes.Guid
 import org.apache.kafka.common.serialization.{Deserializer, Serializer, StringDeserializer, StringSerializer}
-import java.util
+import play.api.libs.json.{Json, Reads, Writes}
 
 
 object customTypes {
@@ -22,7 +21,6 @@ case class DeviceModel(deviceId: Guid, name: String, createdAt: java.util.Date)
 
 object Protocol{
 
-  import play.api.libs.json.Json._
   import play.api.libs.json._
 
   val rds: Reads[Timestamp] = (__ \ "time").read[Long].map { long => new Timestamp(long) }

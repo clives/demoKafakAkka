@@ -7,8 +7,8 @@ import akka.kafka.testkit.KafkaTestkitTestcontainersSettings
 import akka.kafka.testkit.scaladsl.{ScalatestKafkaSpec, TestcontainersKafkaPerClassLike}
 import akka.stream.scaladsl.{Sink, Source}
 import akka.stream.testkit.scaladsl.StreamTestKit.assertAllStagesStopped
+import demo.models.Protocol.DeviceReading
 import demo.models.{JsonDeserializer, JsonSerializer, MeasureUnit}
-import demo.models.Protocol.{DeviceReading, MeasureUnitFrmt}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.{ProducerConfig, ProducerRecord}
 import org.apache.kafka.common.config.TopicConfig

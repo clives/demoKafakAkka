@@ -1,23 +1,17 @@
-import akka.kafka.{ProducerSettings, Subscriptions}
-import akka.kafka.scaladsl.{Consumer, Producer}
-import akka.kafka.testkit.KafkaTestkitTestcontainersSettings
-import akka.kafka.testkit.scaladsl.{ScalatestKafkaSpec, TestcontainersKafkaPerClassLike}
-import akka.stream.scaladsl.{Sink, Source}
-import akka.stream.testkit.scaladsl.StreamTestKit.assertAllStagesStopped
-import org.apache.kafka.clients.consumer.ConsumerConfig
-import org.apache.kafka.clients.producer.{ProducerConfig, ProducerRecord}
-import org.apache.kafka.common.config.TopicConfig
-import org.scalatest.concurrent.{Eventually, ScalaFutures}
-import org.scalatest.matchers.should.Matchers
-import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.wordspec.AnyWordSpecLike
-import akka.actor.Actor
-import akka.actor.Props
-import akka.event.Logging
 import akka.actor.ActorSystem
-import demo.models.{JsonDeserializer, JsonSerializer}
+import akka.kafka.scaladsl.Consumer
+import akka.kafka.testkit.KafkaTestkitTestcontainersSettings
+import akka.kafka.testkit.scaladsl.TestcontainersKafkaPerClassLike
+import akka.kafka.{ProducerSettings, Subscriptions}
+import akka.stream.scaladsl.Sink
+import akka.stream.testkit.scaladsl.StreamTestKit.assertAllStagesStopped
 import demo.models.Protocol.DeviceReading
+import demo.models.{JsonDeserializer, JsonSerializer}
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.common.config.TopicConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
+import org.scalatest.time.{Millis, Seconds, Span}
 
 import scala.concurrent.Future
 

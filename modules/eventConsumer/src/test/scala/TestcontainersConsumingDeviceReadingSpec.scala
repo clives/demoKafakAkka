@@ -2,12 +2,13 @@ import java.sql.Timestamp
 import java.util.{Calendar, UUID}
 
 import akka.kafka.Subscriptions
-import akka.kafka.scaladsl.{Consumer, Producer}
+import akka.kafka.scaladsl.Producer
 import akka.kafka.testkit.KafkaTestkitTestcontainersSettings
-import akka.kafka.testkit.scaladsl.{ScalatestKafkaSpec, TestcontainersKafkaPerClassLike}
+import akka.kafka.testkit.scaladsl.TestcontainersKafkaPerClassLike
 import akka.stream.alpakka.slick.scaladsl.SlickSession
-import akka.stream.scaladsl.{Sink, Source}
+import akka.stream.scaladsl.Source
 import akka.stream.testkit.scaladsl.StreamTestKit.assertAllStagesStopped
+import demo.actor.Protocol.{GetAllStates, MeasureState}
 import demo.dao.DeviceReadingTableRow
 import demo.models.Protocol.DeviceReading
 import demo.models.{JsonDeserializer, JsonSerializer, MeasureUnit}
@@ -15,17 +16,14 @@ import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.clients.producer.{ProducerConfig, ProducerRecord}
 import org.apache.kafka.common.config.TopicConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, shortstacks}
-import org.scalatest.concurrent.{Eventually, ScalaFutures}
-import org.scalatest.matchers.should.Matchers
+import org.scalatest.BeforeAndAfterEach
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.wordspec.AnyWordSpecLike
 import slick.jdbc.GetResult
+import akka.pattern.ask
+import akka.util.Timeout
+import demo.models.customTypes.Guid
 
-import scala.concurrent.Future
-import slick.jdbc.H2Profile.api._
-import slick.sql.SqlStreamingAction
-
+import scala.concurrent.duration.DurationInt
 
 class TestcontainersConsumingDeviceReadingSpec extends SpecBase with TestcontainersKafkaPerClassLike  with BeforeAndAfterEach{
 
@@ -57,6 +55,7 @@ class TestcontainersConsumingDeviceReadingSpec extends SpecBase with Testcontain
     "consume and save the msg into h2" in assertAllStagesStopped {
       val totalMessages = 100L
       val partitions = 1
+      val nbrOfDevices=5
 
       // TODO: This is probably not necessary anymore since the testcontainer setup blocks until all brokers are online.
       // TODO: However it is nice reassurance to hear from Kafka itself that the cluster is formed.
@@ -85,7 +84,7 @@ class TestcontainersConsumingDeviceReadingSpec extends SpecBase with Testcontain
         ProducerConfig.ACKS_CONFIG -> "all"
       )
 
-      val devicesUUID = List.tabulate(5)( _=>UUID.randomUUID())
+      val devicesUUID = List.tabulate(nbrOfDevices)( _=>UUID.randomUUID())
       val r = scala.util.Random
 
       val result = Source(0L to totalMessages)
@@ -107,11 +106,15 @@ class TestcontainersConsumingDeviceReadingSpec extends SpecBase with Testcontain
       result.futureValue
 
       //todo - check db content, if size < totalMsg , wait and retry
-      Thread.sleep(10000)
+      Thread.sleep(40000)
       val dbResultFuture=session.db.run(selectAllUsers)
       val dbResult =dbResultFuture.futureValue
       log.info(s"Nbr of events in H2:${dbResult.size}")
       assert(dbResult.size >= totalMessages)
+
+      implicit val timeout = Timeout(5.seconds)
+      val devicesState = (EventsConsumer.stateManager ? GetAllStates).mapTo[Map[Guid ,List[MeasureState]]]
+      assert(devicesState.futureValue.size == nbrOfDevices)
     }
   }
 }

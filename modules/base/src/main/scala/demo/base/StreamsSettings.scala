@@ -3,8 +3,8 @@ package demo.base
 import akka.actor.ActorSystem
 import akka.kafka.{ConsumerSettings, ProducerSettings}
 import com.typesafe.config._
-import demo.models.{JsonDeserializer, JsonSerializer}
 import demo.models.Protocol.DeviceReading
+import demo.models.{JsonDeserializer, JsonSerializer}
 import org.apache.kafka.clients.consumer.ConsumerConfig
 import org.apache.kafka.common.serialization.{StringDeserializer, StringSerializer}
 

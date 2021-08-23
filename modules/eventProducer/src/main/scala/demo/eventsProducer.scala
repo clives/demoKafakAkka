@@ -1,6 +1,8 @@
 import java.util.{Calendar, UUID}
+
 import EventsProducers.KafkaMessageSent
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.kafka.scaladsl.SendProducer
 import akka.kafka.{ProducerMessage, ProducerSettings}
 import demo.DeviceActor
 import demo.base.StreamsSettings
@@ -8,10 +10,10 @@ import demo.models.DeviceModel
 import demo.models.Protocol.{DeviceReading, EventsToSend}
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.{Logger, LoggerFactory}
+
 import scala.collection.immutable.Seq
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
-import akka.kafka.scaladsl.SendProducer
 
 object EventsProducers {
   def props(nbrOfActors: Int, producerSettingOpt: Option[ProducerSettings[String, DeviceReading]], topic: String): Props =

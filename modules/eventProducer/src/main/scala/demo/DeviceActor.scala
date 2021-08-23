@@ -4,11 +4,9 @@ import java.sql.Timestamp
 import java.util.Calendar
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
-import akka.kafka.ProducerSettings
 import demo.models.DeviceModel
 import demo.models.MeasureUnit.Fahrenheit
 import demo.models.Protocol.{DeviceReading, EventsToSend, SendState}
-import demo.models.customTypes.Guid
 
 import scala.concurrent.duration.DurationInt
 
