@@ -1,6 +1,6 @@
 import java.util.{Calendar, UUID}
 
-import EventsProducers.KafkaMessageSent
+import EventsProducersActor.KafkaMessageSent
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.kafka.scaladsl.SendProducer
 import akka.kafka.{ProducerMessage, ProducerSettings}
@@ -15,15 +15,15 @@ import scala.collection.immutable.Seq
 import scala.language.postfixOps
 import scala.util.{Failure, Success}
 
-object EventsProducers {
+object EventsProducersActor {
   def props(nbrOfActors: Int, producerSettingOpt: Option[ProducerSettings[String, DeviceReading]], topic: String): Props =
-    Props(new EventsProducers(nbrOfActors,producerSettingOpt, topic))
+    Props(new EventsProducersActor(nbrOfActors,producerSettingOpt, topic))
 
   case object KafkaMessageSent
 }
 
 
-class EventsProducers(nbrOfDevicesToCreate:Int, producerSettingOpt: Option[ProducerSettings[String, DeviceReading]],topic: String ) extends Actor {
+class EventsProducersActor(nbrOfDevicesToCreate:Int, producerSettingOpt: Option[ProducerSettings[String, DeviceReading]], topic: String ) extends Actor {
 
   val devices = createAndStartDevices()
   private val log: Logger = LoggerFactory.getLogger(getClass)

@@ -61,7 +61,7 @@ class TestcontainersProducerSpec extends SpecBase with TestcontainersKafkaPerCla
       )
 
       val system = ActorSystem("EventsProducers")
-      val producer= system.actorOf(EventsProducers.props(5,  Some(producerConfig), topic), "producer")
+      val producer= system.actorOf(EventsProducersActor.props(5,  Some(producerConfig), topic), "producer")
 
       implicit  val patienceConfig =
         PatienceConfig(timeout = Span(30, Seconds), interval = Span(5, Millis))
