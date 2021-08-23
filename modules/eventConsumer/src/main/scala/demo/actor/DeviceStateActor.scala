@@ -5,12 +5,12 @@ import demo.actor.Protocol.{GetState, MeasureState, StateResponse}
 import demo.models.customTypes.Guid
 import org.slf4j.{Logger, LoggerFactory}
 
-object DeviceState {
+object DeviceStateActor {
   def props(deviceId:Guid, state:  MeasureState): Props =
-    Props(new DeviceState(deviceId, state))
+    Props(new DeviceStateActor(deviceId, state))
 }
 
-class DeviceState(deviceId:Guid, state:  MeasureState) extends Actor{
+class DeviceStateActor(deviceId:Guid, state:  MeasureState) extends Actor{
   private val log: Logger = LoggerFactory.getLogger(getClass)
 
   def innerState( states: List[MeasureState] ): Actor.Receive={

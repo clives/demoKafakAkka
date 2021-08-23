@@ -7,19 +7,19 @@ import org.slf4j.{Logger, LoggerFactory}
 
 import scala.language.postfixOps
 
-object DevicesStateManager {
+object DevicesStateManagerActor {
   def props(): Props =
-    Props(new DevicesStateManager())
+    Props(new DevicesStateManagerActor())
 }
 
-class DevicesStateManager() extends Actor {
+class DevicesStateManagerActor() extends Actor {
 
   private val log: Logger = LoggerFactory.getLogger(getClass)
   implicit val system = ActorSystem("DevicesStateManagerActor")
 
   private def createDeviceState(device: Guid, state: MeasureState): ActorRef ={
     implicit val system = ActorSystem("DevicesStateActor")
-    system.actorOf(DeviceState.props(device, state ))
+    system.actorOf(DeviceStateActor.props(device, state ))
   }
 
   def state(devices :List[DeviceActor], currentState: Map[Guid ,List[MeasureState]]=Map.empty, expectedDeviceResponses :Option[Int]=None, requester:Option[ActorRef]=None  ): Actor.Receive={

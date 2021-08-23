@@ -6,7 +6,7 @@ import akka.kafka.scaladsl.Consumer
 import akka.kafka.{CommitterSettings, ConsumerSettings, Subscription}
 import akka.stream.alpakka.slick.scaladsl.{Slick, SlickSession}
 import akka.stream.scaladsl.Sink
-import demo.actor.DevicesStateManager
+import demo.actor.DevicesStateManagerActor
 import demo.actor.Protocol.NewMeasure
 import demo.models.Protocol.DeviceReading
 import org.slf4j.{Logger, LoggerFactory}
@@ -19,7 +19,7 @@ object EventsConsumer {
   implicit val system = ActorSystem("EventsConsumer")
   private val log: Logger = LoggerFactory.getLogger(getClass)
   implicit val session = SlickSession.forConfig("slick-h2")
-  val stateManager= system.actorOf(DevicesStateManager.props(), "DevicesStateManager")
+  val stateManager= system.actorOf(DevicesStateManagerActor.props(), "DevicesStateManager")
   val committerSettings = CommitterSettings(system)
 
   def consumeAndCommit[K, V, O](consumerSettings: ConsumerSettings[String, DeviceReading], subscription: Subscription)= {
